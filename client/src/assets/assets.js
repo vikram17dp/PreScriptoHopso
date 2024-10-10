@@ -296,4 +296,18 @@ export const doctors = [
             line2: 'Circle, Ring Road, London'
         }
     },
+    {
+        _id: 'doc16',
+        name: 'Dr. Sarah Thompson',
+        image: doc12,
+        speciality: 'Gastroenterologist',
+        degree: 'MBBS',
+        experience: '4 Years',
+        about: 'Dr. Sarah Thompson has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Sarah Thompson has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        fees: 50,
+        address: {
+            line1: '57th Cross, Richmond',
+            line2: 'Circle, Ring Road, London'
+        }
+    }
 ]
