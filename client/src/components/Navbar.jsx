@@ -8,7 +8,7 @@ const Navbar = () => {
   const [token, setToken] = useState(true);
 
   return (
-    <div className="flex items-center justify-between text-sm pb-2 mb-2  border-b border-b-gray-500">
+    <div className="flex items-center justify-between text-sm pb-3 mb-2  border-b border-b-gray-500 ">
       <img
         src={assets.logo}
         alt=""
