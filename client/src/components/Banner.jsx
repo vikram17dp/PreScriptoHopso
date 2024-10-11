@@ -11,7 +11,7 @@ const Banner = () => {
                 <p className='mr-40'>Book Appointment</p>
                 <p className='mt-4'>With100+Trusted Doctors</p>
             </div>
-            <button onClick={()=>navigate('/login')} className='bg-white text-sm sm:text-base text-gray-600 px-8 py-3 rounded-full hover:scale-105 transition-all mr-[26vw] mt-10'>create account</button>
+            <button onClick={()=>navigate('/login')} className='bg-white text-sm sm:text-base text-gray-600 px-8 py-3 rounded-full hover:scale-105 transition-all mr-[20vw] mt-10'>create account</button>
         </div>
         <div className='hidden md:block md:w-1/2 lg:w-[370px] relative'>
             <img src={assets.appointment_img} alt="" className='w-full absolute bottom-0 right-0 max-m-md' />
