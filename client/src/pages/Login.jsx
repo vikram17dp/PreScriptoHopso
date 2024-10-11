@@ -5,11 +5,23 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+
   const onSubmitHandler = async (event) => {
     event.preventDefault();
+    // Add your form submit logic here
   };
+
+  const handleGoogleSignIn = async () => {
+    // Add your Google Sign-In logic here
+    console.log("Google Sign-In initiated");
+  };
+
   return (
-    <form action="" className="min-h-[80vh] flex items-center">
+    <form
+      action=""
+      className="min-h-[80vh] flex items-center"
+      onSubmit={onSubmitHandler}
+    >
       <div className="flex flex-col gap-3 m-auto items-start p-8 min-w-[340px] sm:w-96 border rounded-xl text-zinc-600 text-sm shadow-lg text-left">
         <p className="font-semibold text-2xl">
           {state === "Sign Up" ? "Create Account" : "Login"}
@@ -41,17 +53,27 @@ const Login = () => {
           />
         </div>
         <div className="w-full">
-          <p>password</p>
+          <p>Password</p>
           <input
             className="border border-zinc-300 rounded w-full p-2 mt-1"
             type="password"
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             value={password}
             required
           />
         </div>
-        <button className="bg-primary text-white w-full py-2 rounded-md text-base">
+        <button
+          className="bg-primary text-white w-full py-2 rounded-md text-base"
+          type="submit"
+        >
           {state === "Sign Up" ? "Create Account" : "Login"}
+        </button>
+        <button
+          type="button"
+          onClick={handleGoogleSignIn}
+          className="border border-primary text-white bg-primary w-full py-2 rounded-md text-base mt-2"
+        >
+          Sign in with Google
         </button>
         {state === "Sign Up" ? (
           <p>
@@ -65,12 +87,12 @@ const Login = () => {
           </p>
         ) : (
           <p>
-            create an new account?{" "}
+            Create a new account?{" "}
             <span
               className="text-primary underline cursor-pointer ml-1"
               onClick={() => setState("Sign Up")}
             >
-              click here
+              Click here
             </span>
           </p>
         )}
