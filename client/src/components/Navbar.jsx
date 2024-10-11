@@ -54,6 +54,21 @@ const Navbar = () => {
             Create Account
           </button>
         )}
+        <img className="w-6 md:hidden" onClick={()=>setShowMenu(true)} src={assets.menu_icon} alt="" />
+        {/* {MOBILEMENU} */}
+        <div className={`${showMenu ? 'fixed w-full' : 'h-0 w-0'} md:hidden right-0 top-0 bottom-0 z-20 overflow-hidden bg-white `}>
+          <div className="flex justify-between items-center px-5 py-6">
+            <img className="w-36" src={assets.logo} alt="" onClick={()=>navigate('/')} />
+            <img className="w-7" src={assets.cross_icon} onClick={()=>setShowMenu(false)} alt="" />
+          </div>
+          <ul className="flex flex-col items-center gap-2 mt-5 text-lg font-semibold">
+            <NavLink  onClick={()=>setShowMenu(false)} to='/'><p className='px-4 py-2 rounded-md inline-block'>HOME</p></NavLink>
+            <NavLink  onClick={()=>setShowMenu(false)} to='/doctors'><p className='px-4 py-2 rounded-md inline-block'>ALL DOCTORS</p></NavLink>
+            <NavLink  onClick={()=>setShowMenu(false)} to='/about'><p className='px-4 py-2 rounded-md inline-block'>ABOUT</p></NavLink>
+            <NavLink  onClick={()=>setShowMenu(false)} to='/contact'><p className='px-4 py-2 rounded-md inline-block'>CONTACT</p></NavLink>
+
+          </ul>
+        </div>
       </div>
     </div>
   );
