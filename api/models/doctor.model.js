@@ -22,7 +22,7 @@ const doctorSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    degree:{
+    education:{
         type:String,
         required:true
     },

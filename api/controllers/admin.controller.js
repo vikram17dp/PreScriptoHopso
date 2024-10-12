@@ -6,9 +6,9 @@ import jwt from 'jsonwebtoken'
 
 const addDoctor = async(req,res)=>{
     try {
-        const {name,email,password,speciality,degree,experience,about,fees,address} = req.body;
+        const {name,email,password,speciality,education,experience,about,fees,address} = req.body;
         const imagefile = req.file;
-        if(!name || !email || !password || !speciality || !degree || !experience || !about || !fees || !address){
+        if(!name || !email || !password || !speciality || !education || !experience || !about || !fees || !address){
           return  res.json({success:false,message:"Missing Details"})
         }
 
@@ -29,7 +29,7 @@ const addDoctor = async(req,res)=>{
             email,
             password:hashedPassword,
             speciality,
-            degree,
+            education,
             experience,
             about,
             fees,
