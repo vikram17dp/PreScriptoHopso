@@ -3,13 +3,13 @@ import {  createContext } from "react";
 
 export const AdminContext = createContext()
 
-const AdminContextProvider = (Children)=>{
+const AdminContextProvider = ({children})=>{
     const value = {
 
     }
     return(
         <AdminContext.Provider value={value}>
-            {Children}
+            {children}
         </AdminContext.Provider>
     )
 }

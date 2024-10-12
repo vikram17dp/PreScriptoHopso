@@ -1,14 +1,14 @@
-import { Children, createContext } from "react";
+import {  createContext } from "react";
 
 export const DoctorContext = createContext()
 
-const DoctorContextProvider = (Children)=>{
+const DoctorContextProvider = ({children})=>{
     const value = {
 
     }
     return(
         <DoctorContext.Provider value={value}>
-            {Children}
+            {children}
         </DoctorContext.Provider>
     )
 }
