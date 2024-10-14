@@ -13,8 +13,8 @@ export const registeruser = async (req,res)=>{
             return res.json({success:false,message:"Enter a valid email"})
         }
 
-        if(password.length < 5){
-            return res.json({success:false,message:"Enter a string pasword"})
+        if(password.length < 4){
+            return res.json({success:false,message:"Enter a strong pasword"})
         }
         const salt = await bcrypt.genSalt(10)
         const hasedpassword = await bcrypt.hash(password,salt)
@@ -29,6 +29,30 @@ export const registeruser = async (req,res)=>{
 
         const token = jwt.sign({id:user._id},process.env.JWT_SECRET)
         res.status(200).json({ success: true, message: "User registered successfully", token });
+    } catch (error) {
+        console.log(error)
+        res.json({success:false,message:error.message});
+    }
+}
+
+export const userLogin = async(req,res)=>{
+    try {
+        const {email,password} = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: "Email and password are required" });
+        }
+        const user = await userModel.findOne({email})
+        if(!user){
+            res.json({success:false,message:"user does not found"})
+        }
+        const ismatch = await bcrypt.compare(password,user.password)
+        if(ismatch){
+            const token = jwt.sign({id:user._id},process.env.JWT_SECRET)
+            res.status(200).json({ success: true, message: "User Login successfully", token });
+
+        }else{
+            res.json({success:false,message:"Invalid credentails"})
+        }
     } catch (error) {
         console.log(error)
         res.json({success:false,message:error.message});
