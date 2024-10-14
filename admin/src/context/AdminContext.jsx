@@ -22,7 +22,7 @@ const AdminContextProvider = ({children}) => {
                 toast.error(response.data?.message || "Failed to fetch doctors");
             }
 
-            console.log('Full response:', response.data.doctors);   
+            // console.log('Full response:', response.data.doctors);   
         } catch (error) {
             toast.error(error.message)
         }
