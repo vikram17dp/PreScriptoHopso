@@ -16,19 +16,42 @@ const AdminContextProvider = ({children}) => {
                     Authorization: `Bearer ${aToken}`,
                 },
             });
+            if (response.data && response.data.success) {
+                setDoctors(response.data.doctors);
+            } else {
+                toast.error(response.data?.message || "Failed to fetch doctors");
+            }
 
-            // console.log('Full response:', response.data.doctors);   
+            console.log('Full response:', response.data.doctors);   
         } catch (error) {
-            console.log(error.message)
+            toast.error(error.message)
         }
     }
-
+const changeAvailblity = async (docId)=>{
+    try {
+        const {data} = await axios.post(backendUrl + '/api/admin/change-availblity',{docId},
+            {headers: {
+                Authorization: `Bearer ${aToken}`,
+            }}
+        )
+        if(data.success){
+            toast.success(data.message)
+            getAllDoctors()
+        }else{
+            toast.error(data.message)
+        }
+    } catch (error) {
+        toast.error(error.message)
+        
+    }
+}
     const value = {
         aToken,
         setAToken,
         backendUrl,
         doctors,
-        getAllDoctors
+        getAllDoctors,
+        changeAvailblity
     }
 
     return (
