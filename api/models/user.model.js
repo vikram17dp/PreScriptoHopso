@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
     },
     speciality: {
       type: String,
-      required: true,
+      
     },
     address: {
       type: Object,
