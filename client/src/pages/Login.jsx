@@ -1,19 +1,54 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom"; 
 
 const Login = () => {
   const [state, setState] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const { backendUrl, token, setToken } = useContext(AppContext);
+  const navigate = useNavigate(); 
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
-    // Add your form submit logic here
+    try {
+      let response;
+      if (state === "Sign Up") {
+        response = await axios.post(`${backendUrl}/api/user/register`, {
+          name,
+          email,
+          password,
+        });
+        if (response.data.success) {
+          toast.success("Sign up successful! You can log in now.");
+          setState("login"); 
+        } else {
+          toast.error(response.data.message || "Sign up failed.");
+        }
+      } else {
+        response = await axios.post(`${backendUrl}/api/user/login`, {
+          email,
+          password,
+        });
+        if (response.data.success) {
+          localStorage.setItem("token", response.data.token);
+          setToken(response.data.token);
+          toast.success("Login successful!");
+          navigate("/"); 
+        } else {
+          toast.error(response.data.message || "Login failed.");
+        }
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Network error");
+    }
   };
 
   const handleGoogleSignIn = async () => {
-    // Add your Google Sign-In logic here
-    console.log("Google Sign-In initiated");
+    // Handle Google Sign-In
   };
 
   return (
@@ -27,8 +62,8 @@ const Login = () => {
           {state === "Sign Up" ? "Create Account" : "Login"}
         </p>
         <p>
-          Please {state === "Sign Up" ? "Sign Up" : "log in"} to book
-          appointment
+          Please {state === "Sign Up" ? "Sign Up" : "log in"} to book an
+          appointment.
         </p>
         {state === "Sign Up" && (
           <div className="w-full">
@@ -79,7 +114,7 @@ const Login = () => {
           <p>
             Already have an account?{" "}
             <span
-              onClick={() => setState("Log in")}
+              onClick={() => setState("login")} // Update to 'login'
               className="text-primary underline cursor-pointer ml-1"
             >
               Login here

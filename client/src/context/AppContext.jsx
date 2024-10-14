@@ -8,7 +8,8 @@ const AppContextProvider = ({children}) => {
     const [doctors, setDoctors] = useState([]);
     const currencySymbol = '$'
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
+    const [token,setToken] = useState(localStorage.getItem('token')?localStorage.getItem('token'):false)
+  
     const getDoctorsData = async () => {
         try {
             const response = await axios.get(backendUrl + '/api/doctor/list');
@@ -27,16 +28,19 @@ const AppContextProvider = ({children}) => {
             toast.error(error.message || "An error occurred while fetching doctors");
         }
     }
-
+    const value = {
+        doctors,
+        currencySymbol,
+        getDoctorsData,
+        token,
+        setToken,
+        backendUrl
+    }
     useEffect(() => {
         getDoctorsData()
     }, [])
 
-    const value = {
-        doctors,
-        currencySymbol,
-        getDoctorsData
-    }
+   
 
     return (
         <AppContext.Provider value={value}>
