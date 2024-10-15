@@ -110,3 +110,15 @@ export const googleAuth = async (req, res) => {
       .json({ success: false, message: "Internal server error" });
   }
 };
+
+
+export const getProfile = async(req,res)=>{
+    try {
+        const {userId} = req.body;
+        const userData = await userModel.findById(userId).select('-password')
+        res.json({success:true,userData})
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: error.message });
+    }
+}
