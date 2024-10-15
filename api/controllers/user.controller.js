@@ -126,8 +126,7 @@ export const getProfile = async(req,res)=>{
 
 export const updateProfile = async(req,res)=>{
     try {
-        console.log('Request body:', req.body);
-        console.log('Request file:', req.file);
+      
         
         const {userId,name,address,phone,dob,gender} = req.body;
         const imageFile = req.file;

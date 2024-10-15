@@ -70,7 +70,7 @@ const MyProfile = () => {
         )}
         {isEdit ? (
           <input
-            className="bg-gray-50 text-3xl font-medium max-w-60 mt-4 border border-gray-700 px-2 py-1 mb-2 text-start"
+            className="bg-gray-50 text-3xl font-medium max-w-60 mt-4 border border-gray-700 px-2 py-1 mb-2 text-start rounded-md"
             type="text"
             value={userData.name}
             onChange={(e) =>
@@ -93,7 +93,7 @@ const MyProfile = () => {
             <p className="font-medium">Phone:</p>
             {isEdit ? (
               <input
-                className="bg-gray-100 max-w-52 border border-gray-700 px-2 py-1 mb-2"
+                className="bg-gray-100 max-w-52 border rounded-md border-gray-700 px-2 py-1 mb-2"
                 type="text"
                 value={userData.phone}
                 onChange={(e) =>
@@ -107,7 +107,7 @@ const MyProfile = () => {
             {isEdit ? (
               <p>
                 <input
-                  className="bg-gray-50 border border-gray-700 px-2 py-1 mb-2"
+                  className="bg-gray-50 border rounded-md border-gray-700 px-2 py-1 mb-2"
                   type="text"
                   value={userData.address?.line1 || ""}
                   onChange={(e) =>
@@ -119,7 +119,7 @@ const MyProfile = () => {
                 />
                 <br />
                 <input
-                  className="bg-gray-50 border border-gray-700 px-2 py-1 mb-2"
+                  className="bg-gray-50 border rounded-md border-gray-700 px-2 py-1 mb-2"
                   type="text"
                   value={userData.address?.line2 || ""}
                   onChange={(e) =>
@@ -146,7 +146,7 @@ const MyProfile = () => {
             {isEdit ? (
               <select
                 value={userData.gender}
-                className="max-w-20 ng-gray-100 border border-gray-700 px-2 py-1 mb-2"
+                className="max-w-20 ng-gray-100 border rounded-md border-gray-700 px-2 py-1 mb-2"
                 name=""
                 id=""
                 onChange={(e) =>
@@ -162,7 +162,7 @@ const MyProfile = () => {
             <p className="font-medium ">BirthDay</p>
             {isEdit ? (
               <input
-                className="max-w-28 bg-gray-100 border border-gray-700 px-2 py-1 mb-2"
+                className="max-w-28 rounded-md bg-gray-100 border border-gray-700 px-2 py-1 mb-2"
                 type="date"
                 name=""
                 id=""
