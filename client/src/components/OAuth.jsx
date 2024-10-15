@@ -7,7 +7,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const OAuth = () => {
-  const { backendUrl, setToken } = useContext(AppContext);
+  const { backendUrl, setToken} = useContext(AppContext);
   const navigate = useNavigate();
 
   const handleGoogleSignIn = async () => {
@@ -29,6 +29,8 @@ const OAuth = () => {
           const { token } = res.data;
           localStorage.setItem("token", token);
           setToken(token);
+        
+
           toast.success("Google login successful!");
           navigate("/");  
         } else {

@@ -153,6 +153,7 @@ const MyProfile = () => {
                   setUserData((prev) => ({ ...prev, gender: e.target.value }))
                 }
               >
+                <option value="Other">Other</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
               </select>
