@@ -9,6 +9,7 @@ const AppContextProvider = ({children}) => {
     const currencySymbol = '$'
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const [token,setToken] = useState(localStorage.getItem('token')?localStorage.getItem('token'):false)
+    const [userData,setUserData] = useState(false)
   
     const getDoctorsData = async () => {
         try {
@@ -28,17 +29,40 @@ const AppContextProvider = ({children}) => {
             toast.error(error.message || "An error occurred while fetching doctors");
         }
     }
+
+    const loadUserProfileData = async ()=>{
+        try {
+            const {data} = await axios.get(backendUrl + '/api/user/get-profile',{headers: { Authorization: `Bearer ${token}` }})
+            if(data.success){
+                setUserData(data.userData)
+            }else{
+                toast.error(data.error)
+            }
+        } catch (error) {
+            toast.error(error.message || "An Error Occurred while profile")
+        }
+    }
     const value = {
         doctors,
         currencySymbol,
         getDoctorsData,
         token,
         setToken,
+        userData,
+        setUserData,
+        loadUserProfileData,
         backendUrl
     }
     useEffect(() => {
         getDoctorsData()
     }, [])
+    useEffect(()=>{
+        if(token){
+            loadUserProfileData()
+        }else{
+            setUserData(false)
+        }
+    },[token])
 
    
 

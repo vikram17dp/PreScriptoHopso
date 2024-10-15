@@ -26,6 +26,7 @@ const Login = () => {
         if (response.data.success) {
           toast.success("Sign up successful! You can log in now.");
           setState("login"); 
+          
         } else {
           toast.error(response.data.message || "Sign up failed.");
         }
