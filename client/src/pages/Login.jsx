@@ -3,6 +3,7 @@ import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom"; 
+import OAuth from "../components/OAuth";
 
 const Login = () => {
   const [state, setState] = useState("login");
@@ -47,10 +48,7 @@ const Login = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    // Handle Google Sign-In
-  };
-
+  
   return (
     <form
       action=""
@@ -103,13 +101,7 @@ const Login = () => {
         >
           {state === "Sign Up" ? "Create Account" : "Login"}
         </button>
-        <button
-          type="button"
-          onClick={handleGoogleSignIn}
-          className="border border-primary text-white bg-primary w-full py-2 rounded-md text-base mt-2"
-        >
-          Sign in with Google
-        </button>
+       <OAuth/>
         {state === "Sign Up" ? (
           <p>
             Already have an account?{" "}
