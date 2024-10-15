@@ -1,7 +1,15 @@
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { app } from "../firebase";
+import { useContext } from "react";
+import { AppContext } from "../context/AppContext";  
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const OAuth = () => {
+  const { backendUrl, setToken } = useContext(AppContext);
+  const navigate = useNavigate();
+
   const handleGoogleSignIn = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -11,30 +19,27 @@ const OAuth = () => {
       const { displayName, email, photoURL } = result.user;
 
       try {
-        const res = await fetch('/api/auth/google', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            name: displayName,
-            email: email,
-            image: photoURL
-          })
+        const res = await axios.post(`${backendUrl}/api/user/google`, {
+          name: displayName,
+          email: email,
+          image: photoURL
         });
 
-        const data = await res.json();
-        if (res.ok) {
-          console.log("User successfully authenticated and stored:", data);
+        if (res.status === 200) {
+          const { token } = res.data;
+          localStorage.setItem("token", token);
+          setToken(token);
+          toast.success("Google login successful!");
+          navigate("/");  
         } else {
-          console.error("Failed to authenticate user on the server", data);
+          toast.error(res.data.message || "Google login failed.");
         }
       } catch (error) {
-        console.error("Error with server authentication:", error);
+        toast.error(error.response?.data?.message || "Network error during Google login.");
       }
 
     } catch (error) {
-      console.error("Could not login with Google:", error);
+      toast.error("Google sign-in failed.");
     }
   };
 

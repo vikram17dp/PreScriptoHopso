@@ -13,7 +13,9 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: function() {
+        return this.authMethod === 'local';
+      },
     },
     image: {
       type: String,
