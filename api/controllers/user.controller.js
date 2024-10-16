@@ -168,6 +168,7 @@ export const updateProfile = async (req, res) => {
 
 export const bookAppointment = async (req,res) => {
   try {
+
     const { userId, docId, slotDate, slotTime } = req.body;
     const docData = await doctorModel.findById(docId).select("-password");
     if (!docData.available) {
@@ -178,13 +179,12 @@ export const bookAppointment = async (req,res) => {
     let slots_booked = docData.slots_booked;
     if (slots_booked[slotDate]) {
       if (slots_booked[slotDate].includes(slotTime)) {
-        return res
-          .status(400)
-          .json({ success: false, message: "slots are not found" });
+        return res.json({ success: false, message: "Slot already booked" });
       } else {
         slots_booked[slotDate].push(slotTime);
       }
-    } else {
+    }
+     else {
       slots_booked[slotDate] = [];
       slots_booked[slotDate].push(slotTime);
     }
@@ -205,7 +205,7 @@ export const bookAppointment = async (req,res) => {
     const newappointment = new appointmentModel(appointmentData)
     await newappointment.save()
     await doctorModel.findByIdAndUpdate(docData,{slots_booked})
-    res.json({success:true,message:"Appointment Booked"})
+    res.json({ success: true, message: "Appointment booked successfully" });
 
   } catch (error) {
     console.error(error);
