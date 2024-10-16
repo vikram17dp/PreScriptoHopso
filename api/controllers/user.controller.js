@@ -166,7 +166,7 @@ export const updateProfile = async (req, res) => {
   }
 };
 
-export const bookAppointment = async () => {
+export const bookAppointment = async (req,res) => {
   try {
     const { userId, docId, slotDate, slotTime } = req.body;
     const docData = await doctorModel.findById(docId).select("-password");
