@@ -212,7 +212,31 @@ export const myAppointments = async (req, res) => {
   try {
     const { userId } = req.body;
     const appointments = await appointmentModel.find({ userId });
-    res.json({success:true,appointments})
+    res.json({ success: true, appointments });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const cancelAppointment = async (req, res) => {
+  try {
+    const { userId, appointmentId } = req.body;
+    const appointmentData = await appointmentModel.findById(appointmentId);
+    if (appointmentData.userId !== userId) {
+      return res.json({ success: false, message: "unauthorized action " });
+    }
+    await appointmentModel.findByIdAndUpdate(appointmentData, {
+      cancelled: true,
+    });
+    const { docId, slotDate, slotTime } = appointmentData;
+    const docData = await doctorModel.findById(docId);
+    let slots_booked = docData.slots_booked;
+    if (slots_booked[slotDate]) {
+      slots_booked[slotDate] = slots_booked[slotDate].filter((e) => e !== slotTime);
+    }
+    await doctorModel.findByIdAndUpdate(docId, { slots_booked });
+    res.json({ success: true, message: "Appoitment Cancelled" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ success: false, message: error.message });
