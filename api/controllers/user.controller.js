@@ -245,25 +245,28 @@ export const cancelAppointment = async (req, res) => {
 };
 
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: '2023-10-16',
+});
 
-export const paymentStripe = async(req,res)=>{
-
+export const paymentStripe = async (req, res) => {
   try {
-   const {appointmentId} = req.body;
-   const appointmentData = await appointmentModel.findById(appointmentId)
-   if(!appointmentData || !appointmentData.cancelled){
-    return res.json({success:false,message:"Appointment cancelled or cancelled"})
-   }
-    const options = {
-      amount:appointmentData.amount * 100,
-      currency:process.env.CURRENCY,
-      receipt:appointmentId
+    const { appointmentId } = req.body;
+    const appointmentData = await appointmentModel.findById(appointmentId);
+    
+    if (!appointmentData || appointmentData.cancelled) {
+      return res.status(400).json({ success: false, message: "Appointment not found or cancelled" });
     }
-    const order = await stripe.orders.create(options)
-    res.json({success:true,order})
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(appointmentData.amount * 100), // Ensure the amount is an integer
+      currency: process.env.CURRENCY || 'inr',
+      metadata: { appointmentId },
+    });
+
+    res.json({ success: true, clientSecret: paymentIntent.client_secret });
   } catch (error) {
-    console.error(error);
+    console.error('Stripe API Error:', error);
     return res.status(500).json({ success: false, message: error.message });
   }
-} 
+};
