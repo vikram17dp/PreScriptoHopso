@@ -270,3 +270,37 @@ export const paymentStripe = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+// This is your updated updatePaymentStatus function
+export const updatePaymentStatus = async (req, res) => {
+  try {
+    const { appointmentId, paymentIntentId } = req.body; // Get paymentIntentId from the request body
+    const appointment = await appointmentModel.findById(appointmentId);
+
+    if (!appointment) {
+      return res.status(404).json({ success: false, message: "Appointment not found" });
+    }
+
+    // Update the appointment fields
+    appointment.payment = true; // Mark payment as done
+    appointment.isCompleted = true; // Mark appointment as completed
+    appointment.status = true
+
+    // Save the updated appointment
+    await appointment.save();
+
+    res.json({
+      success: true,
+      message: "Appointment updated successfully",
+      appointment: {
+        id: appointment._id,
+        amount: appointment.amount,
+        isCompleted: appointment.isCompleted,
+        payment: appointment.payment,
+        status:appointment.status
+      },
+    });
+  } catch (error) {
+    console.error('Error updating appointment:', error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

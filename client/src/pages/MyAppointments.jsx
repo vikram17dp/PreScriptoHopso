@@ -1,14 +1,43 @@
+import PaymentForm from '../components/PaymentForm'
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+
+const PaymentPopup = ({ clientSecret, appointmentId, onClose, onPaymentSuccess }) => {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+        <h2 className="text-2xl font-bold mb-4">Complete Your Stripe Payment</h2>
+        <Elements stripe={stripePromise}>
+          <PaymentForm 
+            clientSecret={clientSecret}
+            appointmentId={appointmentId}
+            onPaymentSuccess={onPaymentSuccess}
+            onClose={onClose}
+          />
+        </Elements>
+        <button 
+          onClick={onClose}
+          className="mt-4 py-2 px-4 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+};
 
 const MyAppointments = () => {
   const { doctors, token, backendUrl, getDoctorsData } = useContext(AppContext);
   const [appointments, setAppointments] = useState([]);
+  const [clientSecret, setClientSecret] = useState("");
+  const [currentAppointmentId, setCurrentAppointmentId] = useState(null);
+  const [isPaymentPopupOpen, setIsPaymentPopupOpen] = useState(false);
   const months = ["", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
   const slotsDateFormat = (slotDate) => {
@@ -50,29 +79,15 @@ const MyAppointments = () => {
     }
   };
 
-  const handlePayment = async (appointmentId) => {
-    
+  const initiatePayment = async (appointmentId) => {
     try {
-      const stripe = await stripePromise;
-      if (!stripe) throw new Error('Stripe failed to load');
-  
-      // Fetch the client secret from the backend
       const { data } = await axios.post(`${backendUrl}/api/user/payment-stripe`, { appointmentId }, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
       if (data.success && data.clientSecret) {
-        const result = await stripe.confirmCardPayment(data.clientSecret, {
-          payment_method: {
-            card: stripe.elements().create('card'),
-          },
-        })
-        if (result.error) {
-          toast.error(result.error.message);
-        } else if (result.paymentIntent.status === 'succeeded') {
-          toast.success('Payment successful!');
-          getUserAppointments();
-        }
+        setClientSecret(data.clientSecret);
+        setCurrentAppointmentId(appointmentId);
+        setIsPaymentPopupOpen(true);
       } else {
         toast.error(data.message || 'Failed to initiate payment');
       }
@@ -81,6 +96,29 @@ const MyAppointments = () => {
       toast.error(error.response?.data?.message || "Payment initiation failed");
     }
   };
+
+  const handlePaymentSuccess = async (paymentIntent) => {
+    // console.log('Payment successful:', paymentIntent); // Log payment intent details
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/api/user/update-payment-status`,
+        { appointmentId: currentAppointmentId, paymentIntentId: paymentIntent.id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // console.log('Payment status update response:', data); // Log response from backend
+      if (data.success) {
+        toast.success("Payment successful and appointment updated!");
+        setIsPaymentPopupOpen(false);
+        getUserAppointments(); // This should update the appointments state
+      } else {
+        toast.error(data.message || "Failed to update appointment status");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update appointment status");
+    }
+  };
+  
   
 
   useEffect(() => {
@@ -105,12 +143,15 @@ const MyAppointments = () => {
               <p className="text-xs mt-1">
                 <span className="text-sm text-neutral-700 font-medium">Date & Time:</span> {slotsDateFormat(item.slotDate)} | {item.slotTime}
               </p>
+              <p className="text-xs mt-1">
+                <span className="text-sm text-neutral-700 font-medium">Status:</span> {item.paymentStatus || 'Pending'}
+              </p>
             </div>
             <div className="flex flex-col gap-2 justify-end">
-              {!item.cancelled && (
+              {!item.cancelled && item.paymentStatus !== 'paid' && (
                 <>
                   <button
-                    onClick={() => handlePayment(item._id)}
+                    onClick={() => initiatePayment(item._id)}
                     className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border hover:bg-primary hover:text-white transition-all duration-300"
                   >
                     Pay Online
@@ -128,10 +169,23 @@ const MyAppointments = () => {
                   Appointment Cancelled
                 </button>
               )}
+              {item.paymentStatus === 'paid' && (
+                <button className="sm:min-w-48 py-1 mb-2 border border-green-600 rounded text-green-500">
+                  Payment Completed
+                </button>
+              )}
             </div>
           </div>
         ))}
       </div>
+      {isPaymentPopupOpen && clientSecret && (
+        <PaymentPopup
+          clientSecret={clientSecret}
+          appointmentId={currentAppointmentId}
+          onClose={() => setIsPaymentPopupOpen(false)}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
     </div>
   );
 };
