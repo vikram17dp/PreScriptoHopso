@@ -48,11 +48,7 @@ const appointmentSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
-    
-    status:{
-        type:String,
-        default:'pending'
-    }
+   
 })
 
 const appointmentModel  = mongoose.models.appointment || mongoose.model('appointment',appointmentSchema)

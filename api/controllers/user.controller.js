@@ -229,6 +229,7 @@ export const cancelAppointment = async (req, res) => {
     }
     await appointmentModel.findByIdAndUpdate(appointmentData, {
       cancelled: true,
+      payment:false
     });
     const { docId, slotDate, slotTime } = appointmentData;
     const docData = await doctorModel.findById(docId);
@@ -282,7 +283,8 @@ export const updatePaymentStatus = async (req, res) => {
 
     // Update the appointment fields
     appointment.payment = true; // Mark payment as done
-    appointment.isCompleted = true; // Mark appointment as completed
+    // appointment.isCompleted = true;
+     // Mark appointment as completed
     appointment.status = true
 
     // Save the updated appointment
