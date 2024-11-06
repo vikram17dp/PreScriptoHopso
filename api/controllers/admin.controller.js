@@ -80,5 +80,28 @@ const allappointments = async (req,res)=>{
         res.json({success:false,message:error.message});
     }
 }
+ const Appointmentcancel = async (req, res) => {
+    try {
+      const {  appointmentId } = req.body;
+      const appointmentData = await appointmentModel.findById(appointmentId);
+    
+      await appointmentModel.findByIdAndUpdate(appointmentData, {
+        cancelled: true,
+        payment:false
+      });
+      const { docId, slotDate, slotTime } = appointmentData;
+      const docData = await doctorModel.findById(docId);
+      let slots_booked = docData.slots_booked;
+      if (slots_booked[slotDate]) {
+        slots_booked[slotDate] = slots_booked[slotDate].filter((e) => e !== slotTime);
+      }
+      await doctorModel.findByIdAndUpdate(docId, { slots_booked });
+      res.json({ success: true, message: "Appoitment Cancelled" });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  };
+  
 
-export {addDoctor,loginAdmin,alldoctors,allappointments}
+export {addDoctor,loginAdmin,alldoctors,allappointments,Appointmentcancel}
