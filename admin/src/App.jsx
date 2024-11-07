@@ -12,11 +12,12 @@ import DashBoard from './pages/Admin/DashBoard.jsx';
 import AllAppointments from './pages/Admin/AllAppointments.jsx';
 import AddDoctor from './pages/Admin/AddDoctor.jsx';
 import DoctorsLists from './pages/Admin/DoctorsLists.jsx';
+import { DoctorContext } from './context/DoctorContext.jsx';
 
 function App() {
   const {aToken} = useContext(AdminContext)
-
-  return aToken ? (
+  const {dToken} = useContext(DoctorContext)
+  return aToken || dToken ? (
     <div className='bg-[#F8F9FD]'>
       <ToastContainer/>
       <Navbar/>
