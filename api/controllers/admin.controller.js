@@ -119,7 +119,7 @@ const Appointmentcancel = async (req, res) => {
     const { appointmentId } = req.body;
     const appointmentData = await appointmentModel.findById(appointmentId);
 
-    await appointmentModel.findByIdAndUpdate(appointmentData, {
+    await appointmentModel.findByIdAndUpdate(appointmentData._id, {
       cancelled: true,
       payment: false,
     });
