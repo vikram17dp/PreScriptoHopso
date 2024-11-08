@@ -24,13 +24,49 @@ const DoctorContextProvider = ({children})=>{
             toast.error(error.message)
         }
     }
+    const AppointmentComplete = async(appointmentId)=>{
+        try {
+            const {data} = await axios.post(backendUrl + '/api/doctor/complete-appointment',{appointmentId},{headers: {
+                Authorization: `Bearer ${dToken}`,
+              },})
+            if(data.success){
+               toast.success(data.message)
+               getAllappointments()
+                
+            }else{
+                toast.error(data.message)
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error(error.message)
+        }
+    }
+    const Appointmentcancel = async(appointmentId)=>{
+        try {
+            const {data} = await axios.post(backendUrl + '/api/doctor/cancel-appointment',{appointmentId},{headers: {
+                Authorization: `Bearer ${dToken}`,
+              },})
+            if(data.success){
+               toast.success(data.message)
+               getAllappointments()
+                
+            }else{
+                toast.error(data.message)
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error(error.message)
+        }
+    }
     const value = {
         backendUrl,
         dToken,
         setDToken,
         setAppointments,
         appointments,
-        getAllappointments
+        getAllappointments,
+        AppointmentComplete,
+        Appointmentcancel
     }
     return(
         <DoctorContext.Provider value={value}>
