@@ -13,8 +13,8 @@ const DoctorContextProvider = ({children})=>{
                 Authorization: `Bearer ${dToken}`,
               },})
             if(data.success){
-                setAppointments(data.appointments.reverse())
-                console.log(data.appointments.reverse());
+                setAppointments(data.appointments)
+                // console.log(data.appointments.reverse());
                 
             }else{
                 toast.error(data.message)
