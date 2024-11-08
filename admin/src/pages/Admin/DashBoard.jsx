@@ -52,7 +52,7 @@ const DashBoard = () => {
                     <p className='text-gray-600'>{slotsDateFormat(item.slotDate)}</p>
                   </div>
                   {
-              item.cancelled ? <p className='text-red-500 text-xs font-medium'>cancelled</p> : <img src={assets.cross_icon} alt="image" onClick={()=>Appointmentcancel(item._id)} className='bg-red-500 rounded-full w-6 cursor-pointer'/>
+              item.cancelled ? <p className='text-red-500 text-xs font-medium'>cancelled</p> : <img src={assets.cancel_icon} alt="image" onClick={()=>Appointmentcancel(item._id)} className=' rounded-full w-10 cursor-pointer'/>
             }
                 </div>
               ))

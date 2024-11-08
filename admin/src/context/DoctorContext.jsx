@@ -7,6 +7,8 @@ const DoctorContextProvider = ({children})=>{
     const backendUrl = import.meta.env.VITE_BACKEND_URL
     const [dToken, setDToken] = useState(localStorage.getItem('dToken') || '')
     const [appointments,setAppointments] = useState([])
+const [dashData,setDashData] = useState(false)
+
     const getAllappointments = async()=>{
         try {
             const {data} = await axios.get(backendUrl + '/api/doctor/appointments',{headers: {
@@ -45,7 +47,7 @@ const DoctorContextProvider = ({children})=>{
         try {
             const {data} = await axios.post(backendUrl + '/api/doctor/cancel-appointment',{appointmentId},{headers: {
                 Authorization: `Bearer ${dToken}`,
-              },})
+              }})
             if(data.success){
                toast.success(data.message)
                getAllappointments()
@@ -53,6 +55,24 @@ const DoctorContextProvider = ({children})=>{
             }else{
                 toast.error(data.message)
             }
+        } catch (error) {
+            console.error(error)
+            toast.error(error.message)
+        }
+    }
+
+    const getDashData = async ()=>{
+        try {
+            const {data} = await axios.get(backendUrl + '/api/doctor/dashboard',{headers: {
+                Authorization: `Bearer ${dToken}`,
+              }})
+              if(data.success){
+                setDashData(data.dashdata)
+                // console.log(data.dashdata);
+                
+              }else{
+                toast.error(data.message)
+              }
         } catch (error) {
             console.error(error)
             toast.error(error.message)
@@ -66,7 +86,10 @@ const DoctorContextProvider = ({children})=>{
         appointments,
         getAllappointments,
         AppointmentComplete,
-        Appointmentcancel
+        Appointmentcancel,
+        getDashData,
+        setDashData,
+        dashData
     }
     return(
         <DoctorContext.Provider value={value}>

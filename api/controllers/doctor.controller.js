@@ -89,3 +89,34 @@ export const appointmentCancel = async(req,res)=>{
         res.status(500).json({ success: false, message: error.message });
     }
 }
+
+
+export const dashboardDoctor = async(req,res)=>{
+    try {
+        const {docId} = req.body;
+        let earings = 0;
+        const appointments = await appointmentModel.find({docId})
+        appointments.map((item)=>{
+            if(item.isCompleted || item.payment){
+                earings += item.amount
+            }
+        })
+        let patients = []
+        appointments.map((item)=>{
+            if(!patients.includes(item.userId))
+            {
+                patients.push(item.userId)
+            }
+        })
+        const dashdata = {
+            earings,
+            appointments:appointments.length,
+            patients:patients.length,
+            latestappointment:appointments.reverse().slice(0,5)
+        }
+        res.json({success:true,dashdata})
+    } catch (error) {
+        console.error( error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
