@@ -50,7 +50,9 @@ export const loginDoctor = async (req,res)=>{
 export const appointmentDoctor = async (req,res)=>{
     try {
        const {docId} = req.body;
+      
        const appointments = await appointmentModel.find({docId})
+      
        res.json({success:true,appointments}) 
     } catch (error) {
         console.error("Error fetching doctors:", error);

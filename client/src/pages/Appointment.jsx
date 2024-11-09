@@ -81,11 +81,15 @@ const Appointment = () => {
 
         const slotDate = day + "_" + month + "_" + year
        
-        const {data} = await axios.post(backendUrl + '/api/user/book-appointment',{docId,slotDate,slotTime},{
-          headers:{
-            Authorization: `Bearer ${token}`
+        const { data } = await axios.post(
+          `${backendUrl}/api/user/book-appointment`,
+          { docId, slotDate, slotTime },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
-        })
+        );
         if(data.success){
           toast.success(data.message)
           getDoctorsData()
@@ -94,8 +98,12 @@ const Appointment = () => {
           toast.error(data.message)
         }
       } catch (error) {
-        console.log(error);
-        toast.error(error.message)
+        console.error("Error booking appointment:", error);
+        if (error.response && error.response.data) {
+          toast.error(error.response.data.message);
+        } else {
+          toast.error(error.message);
+        }
       }
   }
 

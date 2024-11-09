@@ -193,37 +193,47 @@ export default function MyAppointments() {
                 <span className="text-sm text-neutral-700 font-medium">
                   Status:
                 </span>{" "}
-                {item.cancelled ? "Pending" : item.payment ? "Paid" : "Pending"}
+                {item.cancelled ? "cancelled" : item.payment || item.isCompleted ? "Paid" : "Pending"}
               </p>
             </div>
             <div className="flex flex-col gap-2 justify-end">
-              {!item.cancelled && (
-                <>
-                  {!item.payment && (
-                    <button
-                      onClick={() => initiatePayment(item._id)}
-                      className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border hover:bg-primary hover:text-white transition-all duration-300"
-                    >
-                      Pay Online
-                    </button>
-                  )}
-                  <button
-                    onClick={() => cancelAppointment(item._id)}
-                    className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border hover:bg-red-700 hover:text-white transition-all duration-300"
-                  >
-                    Cancel appointment
-                  </button>
-                </>
+              {/* Appointment Completed */}
+              {item.isCompleted && (
+                <button className="sm:min-w-48 py-1 mb-2 border bg-green-500 text-white transition-all duration-300">
+                  Appointment Completed
+                </button>
               )}
+
+              {/* Payment Completed and not Cancelled */}
+              {!item.isCompleted && item.payment && !item.cancelled && (
+                <button className="sm:min-w-48 py-1 mb-2 border bg-green-500 text-white transition-all duration-300">
+                  Payment Completed
+                </button>
+              )}
+
+              {/* Appointment Cancelled */}
               {item.cancelled && (
                 <button className="sm:min-w-48 py-1 mb-2 border border-red-600 rounded text-red-500">
                   Appointment Cancelled
                 </button>
               )}
-              {item.payment && !item.cancelled && (
-                <button className="sm:min-w-48 py-1 mb-2 border bg-green-500 text-white transition-all duration-300  ">
-                  Payment Completed
-                </button>
+
+              {/* Show Pay and Cancel buttons only if not completed, not cancelled, and payment is pending */}
+              {!item.isCompleted && !item.cancelled && !item.payment && (
+                <>
+                  <button
+                    onClick={() => initiatePayment(item._id)}
+                    className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border hover:bg-primary hover:text-white transition-all duration-300"
+                  >
+                    Pay Online
+                  </button>
+                  <button
+                    onClick={() => cancelAppointment(item._id)}
+                    className="text-sm text-stone-500 text-center sm:min-w-48 py-2 border hover:bg-red-700 hover:text-white transition-all duration-300"
+                  >
+                    Cancel Appointment
+                  </button>
+                </>
               )}
             </div>
           </div>

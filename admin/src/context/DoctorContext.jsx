@@ -88,7 +88,7 @@ const DoctorContextProvider = ({children})=>{
           })
           if (data.success) {
             setProfileData(data.profileData)
-            console.log("profile data", data.profileData)
+            // console.log("profile data", data.profileData)
           } else {
             toast.error(data.message)
           }
