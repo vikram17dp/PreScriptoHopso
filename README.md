@@ -77,6 +77,7 @@ Now, with the addition of **Stripe Payment Gateway**, Prescripto HSP allows pati
 - **Live Demo:** [Prescripto Live](https://pre-scripto-hopso-frontend.vercel.app/)
 - **GitHub Repository:** [GitHub](https://github.com/vikram17dp/PreScriptoHopso)
 - **LinkedIn Profile:** [Vikram D P](https://www.linkedin.com/in/vikram-d-p-20053127b/)
+- **Live video:** [Prescripto sample video](https://github.com/user-attachments/assets/b82ad86f-4954-4c98-9f1e-64899977419c)
 ## 💡 About the Project
 This project has been a fantastic learning experience, allowing me to dive deep into both frontend and backend development. I’m proud of the end result and excited about the potential applications of this hospital management platform in healthcare settings.
 
