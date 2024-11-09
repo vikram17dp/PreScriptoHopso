@@ -105,5 +105,11 @@ This project has been a fantastic learning experience, allowing me to dive deep 
 ### Payment Gateway:
 - **Secure payments** via **Stripe** for appointments and prescriptions.
 
+### video of the project
+-
+Uploading Screen Recording 2024-11-09 140351 (1).mp4…
+
+
+
 ## 🤝 Contributing
 Feel free to fork this repository, create a feature branch, and submit a pull request. Contributions, issues, and feature requests are welcome!
