@@ -120,3 +120,25 @@ export const dashboardDoctor = async(req,res)=>{
         res.status(500).json({ success: false, message: error.message });
     }
 }
+
+export const getdoctorprofile = async (req, res) => {
+    try {
+      const { docId } = req.body
+      const profiledata = await doctorModel.findById(docId).select('-password')
+      res.json({ success: true, profileData: profiledata })
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: error.message });
+    }
+  }
+
+export const updateProfileData = async (req,res)=>{
+    try {
+        const {docId,fees,available,address}= req.body;
+        await doctorModel.findByIdAndUpdate(docId,{fees,available,address})
+        res.json({success:true,message:"Profile Updated"})
+    } catch (error) {
+        console.error( error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+}

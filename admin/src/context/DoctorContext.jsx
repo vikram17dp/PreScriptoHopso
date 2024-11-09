@@ -7,7 +7,8 @@ const DoctorContextProvider = ({children})=>{
     const backendUrl = import.meta.env.VITE_BACKEND_URL
     const [dToken, setDToken] = useState(localStorage.getItem('dToken') || '')
     const [appointments,setAppointments] = useState([])
-const [dashData,setDashData] = useState(false)
+    const [dashData,setDashData] = useState(false)
+    const [profileData,setProfileData] = useState(false)
 
     const getAllappointments = async()=>{
         try {
@@ -78,6 +79,24 @@ const [dashData,setDashData] = useState(false)
             toast.error(error.message)
         }
     }
+    const getprofiledata = async () => {
+        try {
+          const { data } = await axios.get(`${backendUrl}/api/doctor/profile`, {
+            headers: {
+              Authorization: `Bearer ${dToken}`,
+            },
+          })
+          if (data.success) {
+            setProfileData(data.profileData)
+            console.log("profile data", data.profileData)
+          } else {
+            toast.error(data.message)
+          }
+        } catch (error) {
+          console.error(error)
+          toast.error(error.message)
+        }
+      }
     const value = {
         backendUrl,
         dToken,
@@ -89,7 +108,10 @@ const [dashData,setDashData] = useState(false)
         Appointmentcancel,
         getDashData,
         setDashData,
-        dashData
+        dashData,
+        profileData,
+        setProfileData,
+        getprofiledata
     }
     return(
         <DoctorContext.Provider value={value}>
