@@ -106,8 +106,9 @@ This project has been a fantastic learning experience, allowing me to dive deep 
 - **Secure payments** via **Stripe** for appointments and prescriptions.
 
 ### video of the project
--
-Uploading Screen Recording 2024-11-09 140351 (1).mp4…
+- **Live video:** [Prescripto sample video](https://github.com/user-attachments/assets/b82ad86f-4954-4c98-9f1e-64899977419c)
+
+
 
 
 
