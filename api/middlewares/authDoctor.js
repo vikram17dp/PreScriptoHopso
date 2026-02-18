@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const authDoctor = async (req, res, next) => {
+const authDoctor = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -10,13 +10,14 @@ const authDoctor = async (req, res, next) => {
       });
     }
 
-    const token = authHeader.split(" ")[1]; // Extract the token
+    const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.body.docId = decoded.id;
 
-    next(); // Proceed to the next middleware or route handler
+    req.userId = decoded.id;   // ← ONLY set req.userId, never req.body.docId
+
+    next();
   } catch (error) {
-    console.error("Authorization Error:", error.message);
+    console.error("Auth Error:", error.message);
     return res.status(401).json({ success: false, message: "Invalid Token" });
   }
 };

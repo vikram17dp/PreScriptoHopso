@@ -48,7 +48,11 @@ const appointmentSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
-   
+    prescription: {
+        type: String,   
+        default: null
+  }
+    
 })
 
 const appointmentModel  = mongoose.models.appointment || mongoose.model('appointment',appointmentSchema)

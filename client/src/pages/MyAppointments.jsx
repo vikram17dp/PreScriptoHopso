@@ -8,83 +8,98 @@ import { AppContext } from "../context/AppContext";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
-const PaymentPopup = ({
-  clientSecret,
-  appointmentId,
-  onClose,
-  onPaymentSuccess,
-}) => {
+const PaymentPopup = ({ clientSecret, appointmentId, onClose, onPaymentSuccess }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+      <h2 className="text-2xl font-bold mb-4">Complete Your Stripe Payment</h2>
+      <Elements stripe={stripePromise}>
+        <PaymentForm
+          clientSecret={clientSecret}
+          appointmentId={appointmentId}
+          onPaymentSuccess={onPaymentSuccess}
+          onClose={onClose}
+        />
+      </Elements>
+      <button
+        onClick={onClose}
+        className="mt-4 py-2 px-4 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+);
+
+// ── Prescription Card ─────────────────────────────────────────────────────────
+const PrescriptionCard = ({ appointmentId, token, backendUrl }) => {
+  const [prescription, setPrescription] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRx = async () => {
+      try {
+        const { data } = await axios.get(
+          `${backendUrl}/api/user/get-prescription`,
+          {
+            params: { appointmentId },
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (data.success) setPrescription(data.prescription);
+      } catch (err) {
+        console.error("Prescription fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRx();
+  }, [appointmentId]);
+
+  if (loading)
+    return <p className="text-xs text-gray-400 mb-2">Loading prescription...</p>;
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
-        <h2 className="text-2xl font-bold mb-4">
-          Complete Your Stripe Payment
-        </h2>
-        <Elements stripe={stripePromise}>
-          <PaymentForm
-            clientSecret={clientSecret}
-            appointmentId={appointmentId}
-            onPaymentSuccess={onPaymentSuccess}
-            onClose={onClose}
-          />
-        </Elements>
-        <button
-          onClick={onClose}
-          className="mt-4 py-2 px-4 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
-        >
-          Close
-        </button>
-      </div>
+    <div className="mb-2 p-3 rounded-lg border border-green-200 bg-green-50">
+      <p className="text-xs font-semibold text-green-800 mb-1">Doctor Prescription</p>
+      {prescription ? (
+        <p className="text-xs text-gray-700 whitespace-pre-wrap">{prescription}</p>
+      ) : (
+        <p className="text-xs text-yellow-600 italic">
+          Prescription not added yet. Please check back later.
+        </p>
+      )}
     </div>
   );
 };
 
+// ── Main Component ────────────────────────────────────────────────────────────
 export default function MyAppointments() {
-  const { doctors, token, backendUrl, getDoctorsData } = useContext(AppContext);
+  const { token, backendUrl, getDoctorsData } = useContext(AppContext);
   const [appointments, setAppointments] = useState([]);
   const [clientSecret, setClientSecret] = useState("");
   const [currentAppointmentId, setCurrentAppointmentId] = useState(null);
   const [isPaymentPopupOpen, setIsPaymentPopupOpen] = useState(false);
 
-  const months = [
-    "",
-    "JAN",
-    "FEB",
-    "MAR",
-    "APR",
-    "MAY",
-    "JUN",
-    "JUL",
-    "AUG",
-    "SEP",
-    "OCT",
-    "NOV",
-    "DEC",
-  ];
+  const months = ["", "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+                  "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
   const slotsDateFormat = (slotDate) => {
-    const dateArray = slotDate.split("_");
-    return `${dateArray[0]} ${months[Number(dateArray[1])]} ${dateArray[2]}`;
+    const [d, m, y] = slotDate.split("_");
+    return `${d} ${months[Number(m)]} ${y}`;
   };
 
   const getUserAppointments = async () => {
     try {
-      const { data } = await axios.get(
-        `${backendUrl}/api/user/my-appointments`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const { data } = await axios.get(`${backendUrl}/api/user/my-appointments`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (data.success && Array.isArray(data.appointments)) {
         setAppointments(data.appointments.reverse());
       } else {
-        toast.error("No appointments found or take the appointments");
+        toast.error("No appointments found");
       }
     } catch (error) {
-      console.error(error);
-      toast.error(
-        error.response?.data?.message || "Failed to fetch appointments"
-      );
+      toast.error(error.response?.data?.message || "Failed to fetch appointments");
     }
   };
 
@@ -103,10 +118,7 @@ export default function MyAppointments() {
         toast.error(data.message);
       }
     } catch (error) {
-      console.error(error);
-      toast.error(
-        error.response?.data?.message || "Failed to cancel appointment"
-      );
+      toast.error(error.response?.data?.message || "Failed to cancel appointment");
     }
   };
 
@@ -125,7 +137,6 @@ export default function MyAppointments() {
         toast.error(data.message || "Failed to initiate payment");
       }
     } catch (error) {
-      console.error(error);
       toast.error(error.response?.data?.message || "Payment initiation failed");
     }
   };
@@ -134,21 +145,17 @@ export default function MyAppointments() {
     try {
       const { data } = await axios.post(
         `${backendUrl}/api/user/update-payment-status`,
-        {
-          appointmentId: currentAppointmentId,
-          paymentIntentId: paymentIntent.id,
-        },
+        { appointmentId: currentAppointmentId, paymentIntentId: paymentIntent.id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (data.success) {
-        toast.success("Payment successful and appointment updated!");
+        toast.success("Payment successful!");
         setIsPaymentPopupOpen(false);
-        await getUserAppointments(); // Ensure state is updated
+        getUserAppointments();
       } else {
         toast.error(data.message || "Failed to update appointment status");
       }
     } catch (error) {
-      console.error(error);
       toast.error("Failed to update appointment status");
     }
   };
@@ -160,14 +167,16 @@ export default function MyAppointments() {
   return (
     <div>
       <p className="pb-3 mt-12 font-medium text-gray-700 border-b text-left">
-        MyAppointments
+        My Appointments
       </p>
+
       <div>
         {appointments.slice(0, 3).map((item, index) => (
           <div
             key={index}
-            className="grid grid-cols-[1fr_2fr] gap-4 sm:flex sm:gap-6 py-2 border-b"
+            className="grid grid-cols-[1fr_2fr] gap-4 sm:flex sm:gap-6 py-4 border-b"
           >
+            {/* ── Doctor Image ── */}
             <div>
               <img
                 className="w-32 bg-indigo-50 rounded-lg"
@@ -175,50 +184,61 @@ export default function MyAppointments() {
                 alt=""
               />
             </div>
+
+            {/* ── Center: Appointment Details ── */}
             <div className="flex-1 text-sm text-zinc-600">
-              <p className="text-neutral-800 font-semibold">
-                {item.docData.name}
-              </p>
-              <p>{item.speciality}</p>
+              <p className="text-neutral-800 font-semibold">{item.docData.name}</p>
+              <p>{item.docData.speciality}</p>
               <p className="text-zinc-700 font-medium mt-1">Address:</p>
               <p className="text-xs">{item.docData.address.line1}</p>
               <p className="text-xs">{item.docData.address.line2}</p>
               <p className="text-xs mt-1">
-                <span className="text-sm text-neutral-700 font-medium">
-                  Date & Time:
-                </span>{" "}
+                <span className="text-sm text-neutral-700 font-medium">Date & Time: </span>
                 {slotsDateFormat(item.slotDate)} | {item.slotTime}
               </p>
               <p className="text-xs mt-1">
-                <span className="text-sm text-neutral-700 font-medium">
-                  Status:
-                </span>{" "}
-                {item.cancelled ? "cancelled" : item.payment || item.isCompleted ? "Paid" : "Pending"}
+                <span className="text-sm text-neutral-700 font-medium">Status: </span>
+                {item.cancelled
+                  ? "Cancelled"
+                  : item.isCompleted
+                  ? "Completed"
+                  : item.payment
+                  ? "Paid"
+                  : "Pending"}
               </p>
             </div>
-            <div className="flex flex-col gap-2 justify-end">
-              {/* Appointment Completed */}
+
+            {/* ── Right Side: Prescription FIRST, then action buttons below ── */}
+            <div className="flex flex-col gap-2 justify-end sm:min-w-48">
+
+              {/* 1. Prescription card at the top of the right column */}
+              {(item.isCompleted || item.payment) && !item.cancelled && (
+                <PrescriptionCard
+                  appointmentId={item._id}
+                  token={token}
+                  backendUrl={backendUrl}
+                />
+              )}
+
+              {/* 2. Status buttons below prescription */}
               {item.isCompleted && (
-                <button className="sm:min-w-48 py-1 mb-2 border bg-green-500 text-white transition-all duration-300">
+                <button className="sm:min-w-48 py-1 border bg-green-500 text-white transition-all duration-300">
                   Appointment Completed
                 </button>
               )}
 
-              {/* Payment Completed and not Cancelled */}
               {!item.isCompleted && item.payment && !item.cancelled && (
-                <button className="sm:min-w-48 py-1 mb-2 border bg-green-500 text-white transition-all duration-300">
+                <button className="sm:min-w-48 py-1 border bg-green-500 text-white transition-all duration-300">
                   Payment Completed
                 </button>
               )}
 
-              {/* Appointment Cancelled */}
               {item.cancelled && (
-                <button className="sm:min-w-48 py-1 mb-2 border border-red-600 rounded text-red-500">
+                <button className="sm:min-w-48 py-1 border border-red-600 rounded text-red-500">
                   Appointment Cancelled
                 </button>
               )}
 
-              {/* Show Pay and Cancel buttons only if not completed, not cancelled, and payment is pending */}
               {!item.isCompleted && !item.cancelled && !item.payment && (
                 <>
                   <button
@@ -236,9 +256,11 @@ export default function MyAppointments() {
                 </>
               )}
             </div>
+
           </div>
         ))}
       </div>
+
       {isPaymentPopupOpen && clientSecret && (
         <PaymentPopup
           clientSecret={clientSecret}
